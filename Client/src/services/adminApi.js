@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_ROOT = "http://localhost:6060/api/admin";
+const API_ROOT = "/api/admin";
 
 // Create an axios instance with default config
 const adminClient = axios.create({
@@ -102,7 +102,7 @@ export const updateTransactionStatus = async (id, status) => {
 };
 
 // Card Application Management
-const CARDS_API_ROOT = "http://localhost:6060/api/admin/cards";
+const CARDS_API_ROOT = "/api/admin/cards";
 
 export const getCardApplications = async () => {
   try {

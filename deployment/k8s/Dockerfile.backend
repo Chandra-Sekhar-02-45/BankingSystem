@@ -1,0 +1,20 @@
+# Build Stage
+FROM maven:3.8.5-openjdk-17 AS build
+WORKDIR /app
+
+# Install git
+RUN apt-get update && apt-get install -y git
+
+# Clone repo
+RUN git clone https://github.com/Chandra-Sekhar-02-45/BankingSystem.git .
+
+# Build
+WORKDIR /app/Server
+RUN mvn clean package -DskipTests
+
+# Run Stage
+FROM eclipse-temurin:17-jdk-alpine
+WORKDIR /app
+COPY --from=build /app/Server/target/*.jar app.jar
+EXPOSE 40500
+ENTRYPOINT ["java", "-jar", "app.jar"]

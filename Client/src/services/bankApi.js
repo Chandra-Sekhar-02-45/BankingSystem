@@ -1,89 +1,75 @@
-// src/services/bankApi.js
-const API_ROOT = "http://localhost:6060/api";
-
-async function request(endpoint, method = "GET", body = null) {
-  const url = `${API_ROOT}${endpoint}`;
-  const token = localStorage.getItem("token");
-  const headers = { "Content-Type": "application/json" };
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
-  const opts = { method, headers };
-  if (body) opts.body = JSON.stringify(body);
-
-  const res = await fetch(url, opts);
-  const text = await res.text();
-  const contentType = res.headers.get("content-type") || "";
-  const data = contentType.includes("application/json") ? JSON.parse(text || "{}") : text;
-
-  if (!res.ok) {
-    const err = new Error(data?.message || res.statusText || "API error");
-    err.status = res.status;
-    err.body = data;
-    throw err;
-  }
-  return data;
-}
+import API from './api';
 
 // Transaction Controller Endpoints
-export const deposit = (accountId, amount) =>
-  request("/transactions/deposit", "POST", { accountId, amount });
+export const deposit = async (accountId, amount) => {
+  const response = await API.post("/transactions/deposit", { accountId, amount });
+  return response.data;
+};
 
-export const withdraw = (accountId, amount) =>
-  request("/transactions/withdraw", "POST", { accountId, amount });
+export const withdraw = async (accountId, amount) => {
+  const response = await API.post("/transactions/withdraw", { accountId, amount });
+  return response.data;
+};
 
-export const transfer = (fromAccountId, toAccountId, amount, fee, tax) =>
-  request("/transactions/transfer", "POST", { fromAccountId, toAccountId, amount, fee, tax });
+export const transfer = async (fromAccountId, toAccountId, amount, fee, tax) => {
+  const response = await API.post("/transactions/transfer", { fromAccountId, toAccountId, amount, fee, tax });
+  return response.data;
+};
 
-export const cardTransfer = (senderCardNumber, receiverCardNumber, amount, senderCvv, senderExpiryDate, pin) =>
-  request("/transactions/card-transfer", "POST", { senderCardNumber, receiverCardNumber, amount, senderCvv, senderExpiryDate, pin });
+export const cardTransfer = async (senderCardNumber, receiverCardNumber, amount, senderCvv, senderExpiryDate, pin) => {
+  const response = await API.post("/transactions/card-transfer", { senderCardNumber, receiverCardNumber, amount, senderCvv, senderExpiryDate, pin });
+  return response.data;
+};
 
-export const getCards = () =>
-  request('/cards', 'GET');
+export const getCards = async () => {
+  const response = await API.get('/cards');
+  return response.data;
+};
 
-export const getAllCards = () =>
-  request('/cards/all', 'GET');
+export const getAllCards = async () => {
+  const response = await API.get('/cards/all');
+  return response.data;
+};
 
-export const getHistory = (accountId) =>
-  request(`/transactions/account/${accountId}/history`, "GET");
+export const getHistory = async (accountId) => {
+  const response = await API.get(`/transactions/account/${accountId}/history`);
+  return response.data;
+};
 
 // Account Controller Endpoints
-export const getAccounts = () =>
-  request("/accounts", "GET");
+export const getAccounts = async () => {
+  const response = await API.get("/accounts");
+  return response.data;
+};
 
 // User Controller Endpoints
-export const updateUser = (userId, userData) =>
-  request(`/users/${userId}`, "PUT", userData);
+export const updateUser = async (userId, userData) => {
+  const response = await API.put(`/users/${userId}`, userData);
+  return response.data;
+};
 
 // Auth Controller Endpoints
-export const login = (email, password) =>
-  request("/auth/login", "POST", { email, password });
+export const login = async (email, password) => {
+  const response = await API.post("/auth/login", { email, password });
+  return response.data;
+};
 
-export const register = (fullname, email, password, username, accountNumber, ifsc) =>
-  request("/auth/register", "POST", { fullname, email, password, username, accountNumber, ifsc });
+export const register = async (fullname, email, password, username, accountNumber, ifsc) => {
+  const response = await API.post("/auth/register", { fullname, email, password, username, accountNumber, ifsc });
+  return response.data;
+};
 
-export const getUserLoans = (userId) =>
-  request(`/loans/user/${userId}`, "GET");
+export const getUserLoans = async (userId) => {
+  const response = await API.get(`/loans/user/${userId}`);
+  return response.data;
+};
 
-export const payLoan = (userId, accountId, amount, loanType) =>
-  request("/loans/pay", "POST", { userId, accountId, amount, loanType });
-
+export const payLoan = async (userId, accountId, amount, loanType) => {
+  const response = await API.post("/loans/pay", { userId, accountId, amount, loanType });
+  return response.data;
+};
 
 export const changePassword = async (userId, data) => {
-  const token = localStorage.getItem('token');
-  const response = await fetch(`${API_URL}/users/${userId}/password`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify(data)
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(errorText || 'Failed to change password');
-  }
-
-  return await response.text();
+  const response = await API.put(`/users/${userId}/password`, data);
+  return response.data;
 };
