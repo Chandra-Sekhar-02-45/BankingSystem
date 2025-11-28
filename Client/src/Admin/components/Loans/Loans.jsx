@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../../../services/api";
 import { Check, X, AlertCircle, DollarSign, Users, Activity, Clock } from "lucide-react";
 import "./Loans.css";
-
-const API = import.meta.env.VITE_API_URL || "http://localhost:6060";
 
 export default function Loans() {
   const [loans, setLoans] = useState([]);
@@ -22,9 +20,7 @@ export default function Loans() {
 
   const fetchLoans = async () => {
     try {
-      const res = await axios.get(`${API}/api/loans`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
+      const res = await API.get('/loans');
       setLoans(res.data);
       setLoading(false);
     } catch (err) {
@@ -37,13 +33,7 @@ export default function Loans() {
   const approve = async (id) => {
     setIsApproving(true);
     try {
-      await axios.post(
-        `${API}/api/loans/${id}/approve`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        }
-      );
+      await API.post(`/loans/${id}/approve`, {});
       setMessage("✅ Loan approved successfully!");
       setTimeout(() => setMessage(""), 3000);
       await fetchLoans();
@@ -63,12 +53,11 @@ export default function Loans() {
 
     setIsRejecting(true);
     try {
-      await axios.post(
-        `${API}/api/loans/${selected.id}/reject`,
+      await API.post(
+        `/loans/${selected.id}/reject`,
         rejectReason,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
             "Content-Type": "text/plain",
           },
         }

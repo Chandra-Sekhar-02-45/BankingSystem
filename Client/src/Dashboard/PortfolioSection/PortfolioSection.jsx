@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import axios from 'axios';
+import API from '../../services/api';
 import { jsPDF } from 'jspdf';
 import { useNavigate } from 'react-router-dom';
 import '/src/Dashboard/PortfolioSection/PortfolioSection.css';
@@ -11,16 +11,11 @@ export const PortfolioSection = () => {
   const [paymentStep, setPaymentStep] = useState('DETAILS'); // DETAILS, SELECT_METHOD, PROCESSING, SUCCESS
 
   const [transactions, setTransactions] = useState([]);
-  const API = import.meta.env.VITE_API_URL || "http://localhost:6060";
 
   const fetchLoans = useCallback(async () => {
     try {
       const userId = Number(localStorage.getItem("userId"));
-      const res = await axios.get(`${API}/api/loans/user/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
-      });
+      const res = await API.get(`/loans/user/${userId}`);
 
       const parseCurrency = (value) => {
         if (typeof value === 'number') return value;

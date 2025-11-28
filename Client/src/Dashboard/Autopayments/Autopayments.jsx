@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import API from '../../services/api';
 import './Autopayments.css';
 import { CheckCircle, AlertCircle, Loader, ArrowLeft, Tv, Zap } from 'lucide-react';
-
-const API = 'http://localhost:6060';
 
 const Autopayments = ({ setActiveTab }) => {
     const [activeSection, setActiveSection] = useState('loans'); // 'loans' or 'subscriptions'
@@ -31,9 +29,7 @@ const Autopayments = ({ setActiveTab }) => {
 
     const fetchLoans = async () => {
         try {
-            const res = await axios.get(`${API}/api/loans/user/${userId}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await API.get(`/loans/user/${userId}`);
 
             const activeLoans = res.data.filter(loan => loan.status === 'ACTIVE');
             setLoans(activeLoans);
@@ -56,9 +52,7 @@ const Autopayments = ({ setActiveTab }) => {
         setStatus({ type: '', message: '' });
 
         try {
-            const res = await axios.post(`${API}/api/autopayments/process/${userId}`, {}, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await API.post(`/autopayments/process/${userId}`, {});
 
             setStatus({ type: 'success', message: res.data });
         } catch (err) {
