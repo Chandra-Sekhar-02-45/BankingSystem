@@ -12,19 +12,29 @@
   tasks:
     # Git clone is handled inside Dockerfiles now
 
-    - name: Build Backend Docker Image inside Minikube
+    - name: Build Backend Docker Image
       shell: |
-        eval $(minikube docker-env)
         docker build -t {{ backend_image }} -f "{{ playbook_dir }}/../k8s/Dockerfile.backend" .
       register: build_backend
       changed_when: "'Successfully built' in build_backend.stdout"
 
-    - name: Build Frontend Docker Image inside Minikube
+    - name: Push Backend Docker Image
       shell: |
-        eval $(minikube docker-env)
+        docker push {{ backend_image }}
+      register: push_backend
+      changed_when: "'Pushed' in push_backend.stdout"
+
+    - name: Build Frontend Docker Image
+      shell: |
         docker build -t {{ frontend_image }} -f "{{ playbook_dir }}/../k8s/Dockerfile.frontend" .
       register: build_frontend
       changed_when: "'Successfully built' in build_frontend.stdout"
+
+    - name: Push Frontend Docker Image
+      shell: |
+        docker push {{ frontend_image }}
+      register: push_frontend
+      changed_when: "'Pushed' in push_frontend.stdout"
 
     - name: Apply Kubernetes Manifests
       command: kubectl apply -f "{{ playbook_dir }}/../k8s/deployment.yaml"
